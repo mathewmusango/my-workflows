@@ -1,9 +1,3 @@
-# Centralized dependency review for pull requests.
-#
-# Blocks PRs that introduce dependencies with known high/critical
-# vulnerabilities or disallowed licenses (via the GitHub dependency graph).
-# This only makes sense on `pull_request`, so the job no-ops elsewhere.
-
 name: "security/deps"
 
 on:
@@ -23,3 +17,13 @@ jobs:
       - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5
         with:
           fail-on-severity: high
+          allow-dependencies-licenses: >-
+            pkg:githubactions/mathewmusango/my-workflows/.github/workflows/checks-jsonc.yml,
+            pkg:githubactions/mathewmusango/my-workflows/.github/workflows/checks-js.yml,
+            pkg:githubactions/mathewmusango/my-workflows/.github/workflows/checks-shell.yml,
+            pkg:githubactions/mathewmusango/my-workflows/.github/workflows/checks-yaml.yml,
+            pkg:githubactions/mathewmusango/my-workflows/.github/workflows/checks-python.yml,
+            pkg:githubactions/mathewmusango/my-workflows/.github/workflows/checks-terraform.yml,
+            pkg:githubactions/mathewmusango/my-workflows/.github/workflows/security-secrets.yml,
+            pkg:githubactions/mathewmusango/my-workflows/.github/workflows/security-deps.yml,
+            pkg:githubactions/mathewmusango/my-workflows/.github/workflows/checks.yml
