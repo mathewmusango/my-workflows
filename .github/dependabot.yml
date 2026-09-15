@@ -1,0 +1,16 @@
+version: 2
+updates:
+  # This library's only dependencies are its action pins, and every `uses:` here is
+  # a full commit SHA with a trailing `# vN` — the exact shape Dependabot needs to
+  # map a pin to a version. scripts/strip_comments.rb keeps those markers when the
+  # public subset is generated, so the published copy stays updateable too.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"

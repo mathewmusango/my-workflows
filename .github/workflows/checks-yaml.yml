@@ -12,7 +12,7 @@ jobs:
     outputs:
       changed: ${{ steps.filter.outputs.changed }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
       - id: filter
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Parse YAML (Ruby's built-in psych — no installs)
         run: |
           find . -path './.git' -prune -o -type f \( -name '*.yml' -o -name '*.yaml' \) -print 2>/dev/null | while IFS= read -r f; do
@@ -50,5 +50,5 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7 # v2
