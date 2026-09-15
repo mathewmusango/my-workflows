@@ -1,0 +1,103 @@
+name: "checks/terraform"
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.filter.outputs.changed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - id: filter
+        if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+        shell: bash
+        run: |
+          base="${{ github.event_name == 'push' && github.event.before || github.event.pull_request.base.sha }}"
+          if ! git rev-parse -q --verify "$base^{commit}" >/dev/null; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if git diff --name-only --diff-filter=ACM "$base" "$GITHUB_SHA" | grep -qE '\.tf$|\.tfvars$|\.hcl$'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  fmt:
+    name: fmt
+    needs: detect
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.detect.outputs.changed == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_wrapper: false
+      - name: terraform fmt -check
+        run: terraform fmt -check -recursive -diff
+
+  validate:
+    name: validate
+    needs: detect
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.detect.outputs.changed == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_wrapper: false
+      - name: terraform init + validate (per module)
+        run: |
+          set -euo pipefail
+          dirs="$(find . -path './.git' -prune -o -type f -name '*.tf' -print0 2>/dev/null | xargs -0 -r -n1 dirname | sort -u)"
+          if [ -z "$dirs" ]; then
+            echo "no terraform modules found — skipping"
+            exit 0
+          fi
+          while IFS= read -r d; do
+            echo "::group::terraform validate $d"
+            (cd "$d" && terraform init -backend=false -input=false >/dev/null && terraform validate)
+            echo "::endgroup::"
+          done <<< "$dirs"
+
+  lint:
+    name: lint
+    needs: detect
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.detect.outputs.changed == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: terraform-linters/setup-tflint@1cf010d3c7aef302051ccdb68c14c5dc2efa34ef # v6
+        with:
+          tflint_version: latest
+      - name: TFLint — init plugins
+        run: tflint --init
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: TFLint
+        run: tflint --recursive --format compact
+
+  security:
+    name: security
+    needs: detect
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.detect.outputs.changed == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Checkov
+        uses: bridgecrewio/checkov-action@a8664e3a0549367977f0cda990a34311835c87c0 # v12
+        with:
+          framework: terraform
+          quiet: true
+          # Informational — findings overlap the audit backlog. Flip to false
+          # once the backlog items land.
+          soft_fail: true

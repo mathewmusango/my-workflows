@@ -1,0 +1,28 @@
+name: checks
+
+# Group aggregator — callable only. This repo is the shared HOME for the check
+# workflows, not a place they run: a consumer repo owns the triggered workflow
+# (push / pull_request) that calls this one by its remote ref.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  jsonc:
+    uses: ./.github/workflows/checks-jsonc.yml
+  js:
+    uses: ./.github/workflows/checks-js.yml
+  shell:
+    uses: ./.github/workflows/checks-shell.yml
+  yaml:
+    uses: ./.github/workflows/checks-yaml.yml
+  python:
+    uses: ./.github/workflows/checks-python.yml
+  docker:
+    uses: ./.github/workflows/checks-docker.yml
+  terraform:
+    uses: ./.github/workflows/checks-terraform.yml
+  secrets:
+    uses: ./.github/workflows/security-secrets.yml
