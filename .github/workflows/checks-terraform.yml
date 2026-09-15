@@ -81,7 +81,7 @@ jobs:
       - name: TFLint — init plugins
         run: tflint --init
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
       - name: TFLint
         run: tflint --recursive --format compact
 
