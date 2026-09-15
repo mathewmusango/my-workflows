@@ -1,0 +1,131 @@
+name: "checks/links"
+
+on:
+  workflow_call:
+    inputs:
+      site-url:
+        description: Deployed base URL, scheme included, e.g. https://example.com
+        required: true
+        type: string
+      additional-urls:
+        description: Extra URLs to check, separated by newlines and/or commas
+        required: false
+        type: string
+        default: ""
+      timeout-seconds:
+        description: Per-request curl timeout in seconds
+        required: false
+        type: number
+        default: 30
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    name: links
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check sitemap links and uptime
+        shell: bash
+        env:
+          SITE_URL: ${{ inputs.site-url }}
+          ADDITIONAL_URLS: ${{ inputs.additional-urls }}
+          TIMEOUT_SECONDS: ${{ inputs.timeout-seconds }}
+        run: |
+          set -uo pipefail
+
+          site_root="${SITE_URL%/}"
+          if [ -z "$site_root" ]; then
+            echo "error: site-url input is empty — nothing to check"
+            exit 1
+          fi
+
+          timeout="${TIMEOUT_SECONDS:-30}"
+          case "$timeout" in
+            ''|*[!0-9]*) timeout=30 ;;
+          esac
+          [ "$timeout" -gt 0 ] 2>/dev/null || timeout=30
+
+          ua="Mozilla/5.0 (compatible; my-workflows-links/1; +https://github.com/mathewmusango/my-workflows)"
+
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+
+          urls="$work/urls.txt"
+          locs="$work/locs.txt"
+          failures="$work/failures.txt"
+          : > "$urls"
+          : > "$locs"
+          : > "$failures"
+
+          total=0
+          passed=0
+          failed=0
+
+          record_failure() {
+            failed=$((failed + 1))
+            printf '%s %s\n' "$1" "$2" >> "$failures"
+          }
+
+          probe() {
+            code="$(curl --location --max-time "$timeout" --silent --show-error \
+              --output "$1" --write-out '%{http_code}' --user-agent "$ua" "$2")" || code=""
+            if [ -z "$code" ]; then
+              code=000
+            fi
+            printf '%s' "$code"
+          }
+
+          sitemap="$site_root/sitemap.xml"
+          sitemap_code="$(probe "$work/sitemap.xml" "$sitemap")"
+          total=$((total + 1))
+          echo "sitemap: $sitemap -> $sitemap_code"
+
+          if [ "$sitemap_code" != "200" ]; then
+            record_failure "$sitemap_code" "$sitemap"
+          else
+            grep -o '<loc>[^<]*</loc>' "$work/sitemap.xml" \
+              | sed -e 's|</loc>||' -e 's|<loc>||' -e 's|^[[:space:]]*||' -e 's|[[:space:]]*$||' >> "$locs" || true
+            if [ -s "$locs" ]; then
+              passed=$((passed + 1))
+              cat "$locs" >> "$urls"
+            else
+              echo "warning: $sitemap yielded no <loc> entries — treating as a failed check"
+              record_failure "unusable" "$sitemap"
+            fi
+          fi
+
+          printf '%s\n' "$site_root/" >> "$urls"
+
+          printf '%s\n' "${ADDITIONAL_URLS:-}" \
+            | tr ',' '\n' \
+            | sed -e 's|^[[:space:]]*||' -e 's|[[:space:]]*$||' \
+            | grep -v '^$' >> "$urls" || true
+
+          sort -u -o "$urls" "$urls"
+
+          while IFS= read -r url; do
+            [ -n "$url" ] || continue
+            total=$((total + 1))
+            code="$(probe /dev/null "$url")"
+            case "$code" in
+              2??|3??)
+                passed=$((passed + 1))
+                ;;
+              *)
+                record_failure "$code" "$url"
+                ;;
+            esac
+          done < "$urls"
+
+          echo "checked: $total  passed: $passed  failed: $failed"
+
+          if [ "$failed" -gt 0 ]; then
+            echo "failures (status url):"
+            sort "$failures"
+            exit 1
+          fi
+
+          echo "all checks passed"

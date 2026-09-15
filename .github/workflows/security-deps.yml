@@ -24,6 +24,7 @@ jobs:
             pkg:githubactions/mathewmusango/my-workflows/.github/workflows/checks-yaml.yml,
             pkg:githubactions/mathewmusango/my-workflows/.github/workflows/checks-python.yml,
             pkg:githubactions/mathewmusango/my-workflows/.github/workflows/checks-terraform.yml,
+            pkg:githubactions/mathewmusango/my-workflows/.github/workflows/checks-links.yml,
             pkg:githubactions/mathewmusango/my-workflows/.github/workflows/security-secrets.yml,
             pkg:githubactions/mathewmusango/my-workflows/.github/workflows/security-deps.yml,
             pkg:githubactions/mathewmusango/my-workflows/.github/workflows/checks.yml
