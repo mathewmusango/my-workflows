@@ -4,9 +4,10 @@ Reusable GitHub Actions workflows — check and security jobs that other
 repositories call instead of reimplementing them.
 
 Nothing here is triggered: every workflow is `on: workflow_call`, so nothing runs
-on pushes to this repo. Consumers own the trigger and call these by remote ref. Two things do run: Dependabot (`.github/dependabot.yml`), which opens the weekly
-action bumps for the pins below, and the `Security scan` caller
-(`security-scan.yml`), which runs the security checks against this repo itself.
+on pushes to this repo. Consumers own the trigger and call these by remote ref. Nothing here is triggered: every workflow is `on: workflow_call`, so nothing runs
+on pushes to this repo — consumers own the trigger and call these by remote ref.
+Dependabot (`.github/dependabot.yml`) is the only thing that acts here: it opens the
+weekly action bumps for the pins below.
 
 ## What's available
 
@@ -35,6 +36,10 @@ jobs:
 
 Pin the ref to a **full commit SHA**. Call `checks.yml` the same way to get every
 check above in a single job.
+
+## Security
+
+Report vulnerabilities privately — see [SECURITY.md](SECURITY.md).
 
 ## License
 
