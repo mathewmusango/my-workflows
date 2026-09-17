@@ -1,0 +1,64 @@
+name: "cloudfront/switch"
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "staging | prod — used in the comment convention"
+        required: true
+        type: string
+      component:
+        description: "site | metrics"
+        required: true
+        type: string
+      mode:
+        description: "disable | enable (attribute flip only — nothing is removed)"
+        required: true
+        type: string
+    secrets:
+      project:
+        description: "Name prefix — the distribution comment is <project>-<environment>-<component>"
+        required: true
+      aws_region:
+        required: true
+      toggle_role_arn:
+        description: "Role allowed to flip Enabled (scoped to the environments it may touch)"
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  switch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assume the toggle role (OIDC)
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6
+        with:
+          role-to-assume: ${{ secrets.toggle_role_arn }}
+          aws-region: ${{ secrets.aws_region }}
+
+      - name: Flip Enabled on the distribution
+        env:
+          PROJECT: ${{ secrets.project }}
+          TARGET_ENV: ${{ inputs.environment }}
+          COMPONENT: ${{ inputs.component }}
+          MODE: ${{ inputs.mode }}
+        run: |
+          COMMENT="$PROJECT-$TARGET_ENV-$COMPONENT"
+          if [ "$MODE" = "enable" ]; then
+            ENABLED=true
+          else
+            ENABLED=false
+          fi
+          ID="$(aws cloudfront list-distributions --query "DistributionList.Items[?Comment=='$COMMENT'].Id" --output text)"
+          if [ -z "$ID" ]; then
+            echo "distribution not found for comment '$COMMENT' — nothing to switch"
+            exit 0
+          fi
+          ETAG="$(aws cloudfront get-distribution --id "$ID" --query ETag --output text)"
+          aws cloudfront get-distribution --id "$ID" --query Distribution.DistributionConfig > /tmp/cf-switch-config.json
+          jq --argjson enabled "$ENABLED" '.Enabled = $enabled' /tmp/cf-switch-config.json > /tmp/cf-switch-config-new.json
+          aws cloudfront update-distribution --id "$ID" --if-match "$ETAG" --distribution-config file:///tmp/cf-switch-config-new.json
+          echo "cloudfront $COMMENT -> $MODE (distribution $ID)"

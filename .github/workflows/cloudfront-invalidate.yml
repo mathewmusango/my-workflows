@@ -1,0 +1,52 @@
+name: "cloudfront/invalidate"
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "staging | prod — picks the distribution and the role"
+        required: true
+        type: string
+      paths:
+        description: "Space-separated paths to invalidate (default /*)"
+        required: false
+        type: string
+        default: "/*"
+    secrets:
+      project:
+        description: "Name prefix — the distribution comment is <project>-<environment>-site"
+        required: true
+      aws_region:
+        required: true
+      staging_invalidate_role_arn:
+        required: true
+      prod_invalidate_role_arn:
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  invalidate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assume the invalidate role for the target environment (OIDC)
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6
+        with:
+          role-to-assume: ${{ inputs.environment == 'prod' && secrets.prod_invalidate_role_arn || secrets.staging_invalidate_role_arn }}
+          aws-region: ${{ secrets.aws_region }}
+
+      - name: Invalidate the distribution (lookup by comment convention)
+        env:
+          PROJECT: ${{ secrets.project }}
+          TARGET_ENV: ${{ inputs.environment }}
+          PATHS: ${{ inputs.paths }}
+        run: |
+          ID="$(aws cloudfront list-distributions --query "DistributionList.Items[?Comment=='$PROJECT-$TARGET_ENV-site'].Id" --output text)"
+          if [ -z "$ID" ]; then
+            echo "distribution '$PROJECT-$TARGET_ENV-site' not found — skipping invalidation (content synced)"
+            exit 0
+          fi
+          echo "Invalidating CloudFront '$PROJECT-$TARGET_ENV-site' ($ID): $PATHS"
+          aws cloudfront create-invalidation --distribution-id "$ID" --paths "$PATHS"
