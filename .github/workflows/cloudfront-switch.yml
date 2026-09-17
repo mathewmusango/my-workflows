@@ -12,7 +12,7 @@ on:
         required: true
         type: string
       mode:
-        description: "disable | enable (attribute flip only — nothing is removed)"
+        description: "on | off — the attribute flip only; nothing is removed"
         required: true
         type: string
     secrets:
@@ -47,7 +47,7 @@ jobs:
           MODE: ${{ inputs.mode }}
         run: |
           COMMENT="$PROJECT-$TARGET_ENV-$COMPONENT"
-          if [ "$MODE" = "enable" ]; then
+          if [ "$MODE" = "on" ]; then
             ENABLED=true
           else
             ENABLED=false
