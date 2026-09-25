@@ -4,11 +4,15 @@ All notable changes to the published subset are documented here.
 
 Releases are **timestamp tags** — `v<year>.<MMDD>.<HHMM>Z`, stamped in UTC when the release is cut and never moved. Consumers pin a full commit SHA with the tag in a trailing comment, so a tag labels a published commit rather than tracking one. Newest first.
 
-## [Unreleased]
+## [2026.0925.1807Z] - 2026-09-25
 
 ### Removed
 
 - `branch-policy.yml` — branch naming is a ruleset now, and a `create:`-triggered workflow could only report after the name was already made.
+
+### Changed
+
+- `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md` join the published non-workflow files.
 
 ## [2026.0925.1503Z] - 2026-09-25
 
