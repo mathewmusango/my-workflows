@@ -2,7 +2,7 @@
 
 **Status:** 🟢 applied — live on every branch · **Config:** [`all.json`](all.json)
 
-**Purpose.** The branch-name gate. No allow-list rule for names is available: `branch_name_pattern` is rejected by the API (`422 Invalid rule`, with an empty reason) and the UI offers no "Restrict branch names" either. So the allow-list runs the other way round — this ruleset targets **every** branch, *excludes* the names that are allowed, and applies `creation`. Creating anything not excluded is refused at the push.
+**Purpose.** The branch-name gate. `branch_name_pattern` is rejected here (`422 Invalid rule`, empty reason) and the UI has no "Restrict branch names" either, so the allow-list is inverted: target **every** branch, *exclude* the allowed names, apply `creation`. Anything not excluded is refused at the push.
 
 | Field | Value |
 | --- | --- |
@@ -11,7 +11,7 @@
 | Bypass actors | none, so the name rules bind everyone, owner included |
 | Rules | `creation` only |
 
-**Why exactly one rule.** An all-branches ruleset that also carried `deletion`, `non_fast_forward` or `pull_request` would protect every branch the way `main` is protected — and its `deletion` rule would make a badly named branch **impossible to delete**. Deletion and force-push protection belong to `branch: main`.
+**Why one rule only.** `deletion`, `non_fast_forward` and `pull_request` belong to `branch: main`. Carried here they would protect every branch the way `main` is protected — and `deletion` would make a badly named branch **impossible to delete**.
 
 ## The allowed names
 
