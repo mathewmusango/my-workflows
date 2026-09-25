@@ -2,7 +2,7 @@
 
 **Status:** 🟢 applied — live on every branch · **Config:** [`all.json`](all.json)
 
-**Purpose.** The branch-name gate. There is no allow-list rule for names to use here: `branch_name_pattern` is rejected by the API (`422 Invalid rule`, with an empty reason) and the UI does not offer "Restrict branch names" either. So the allow-list is expressed the other way round — this ruleset targets **every** branch, *excludes* the names that are allowed, and applies `creation`. Creating anything not excluded is refused at the push.
+**Purpose.** The branch-name gate. No allow-list rule for names is available: `branch_name_pattern` is rejected by the API (`422 Invalid rule`, with an empty reason) and the UI offers no "Restrict branch names" either. So the allow-list runs the other way round — this ruleset targets **every** branch, *excludes* the names that are allowed, and applies `creation`. Creating anything not excluded is refused at the push.
 
 | Field | Value |
 | --- | --- |
@@ -22,8 +22,6 @@ The excludes *are* the allow-list:
 | `refs/heads/main` | the default branch |
 | `refs/heads/dependabot/*` · `/*/*` · `/*/*/*` · `/*/*/*/*` | four levels, so a monorepo branch such as `dependabot/npm_and_yarn/packages/app/foo-1.0.0` is not refused |
 | `refs/heads/feature/*` · `fix/*` · `docs/*` · `ci/*` · `infra/*` · `security/*` · `governance/*` · `deps/*` · `content/*` | one path segment each |
-
-`chore/` and `feat/` are deliberately absent — `chore` names an issue bucket rather than a branch type, and `feature/` is the standard spelling. In practice this repository sees only `main` and `dependabot/*`; the typed prefixes exist for the occasional hand-made branch, such as the one a republish now arrives on.
 
 ## Applying
 

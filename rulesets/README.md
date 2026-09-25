@@ -20,4 +20,4 @@ A ruleset is a repository setting, not a file, so nothing here arrives by clone 
 
 The left half is the scope: `branch` when a single branch is gated, `branches` when the ruleset covers all of them. Nothing in GitHub references a ruleset name, so a rename is one `PUT` with the id unchanged.
 
-**No tag ruleset, deliberately.** This is the one repository in the account that cuts release tags — but consumers pin a full SHA, never the tag, and nothing runs here to resolve a check against a tagged commit. A tag ruleset could therefore carry only `deletion` and `non_fast_forward` (protecting a published tag from being moved or deleted). Worth adding if that protection is wanted; not added here.
+No tag ruleset: consumers pin a full SHA, never the tag, and nothing runs here to resolve a check against a tagged commit — so a tag ruleset could carry `deletion` and `non_fast_forward` only.
