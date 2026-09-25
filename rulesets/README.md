@@ -1,7 +1,5 @@
 # rulesets — branch protection as code
 
-A ruleset is a repository setting, not a file, so nothing here arrives by clone or pull — the JSON is read back and written in place with `gh api`.
-
 | File | What it is |
 | --- | --- |
 | [`main.json`](main.json) | the live ruleset on `refs/heads/main`, in GitHub's export/import format |
