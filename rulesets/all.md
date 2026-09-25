@@ -11,8 +11,6 @@
 | Bypass actors | none, so the name rules bind everyone, owner included |
 | Rules | `creation` only |
 
-**Why one rule only.** `deletion`, `non_fast_forward` and `pull_request` belong to `branch: main`. Carried here they would protect every branch the way `main` is protected — and `deletion` would make a badly named branch **impossible to delete**.
-
 ## The allowed names
 
 The excludes *are* the allow-list:
