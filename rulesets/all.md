@@ -33,7 +33,3 @@ gh api repos/mathewmusango/my-workflows/rulesets/24010962
 # they are read-only, and the id lives in the URL.
 gh api --method PUT repos/mathewmusango/my-workflows/rulesets/24010962 --input rulesets/all.json
 ```
-
-**Verified.** Read back and probed in the same pass on 2026-09-25: `bad/probe-mw` was **refused** — `GH013: Cannot create ref due to creations being restricted` — while `ci/probe-mw` was **accepted**, then deleted.
-
-**Change flow.** Edit the JSON (export format) → apply it → update this record in the same pull request.
