@@ -17,5 +17,3 @@ A ruleset is a repository setting, not a file, so nothing here arrives by clone 
 | --- | --- |
 | `branch: main` | the default branch — singular, one branch |
 | `branches: all` | every branch — the name gate |
-
-No tag ruleset: consumers pin a full SHA, never the tag.
