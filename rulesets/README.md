@@ -11,13 +11,11 @@ A ruleset is a repository setting, not a file, so nothing here arrives by clone 
 
 ## Naming
 
-`<scope>: <ref pattern>`. The name answers **which ref this gates**; the payload says what the rules are, because those drift.
+`<scope>: <ref pattern>` — the name says **which ref this gates**.
 
 | Live name | What it gates |
 | --- | --- |
 | `branch: main` | the default branch — singular, one branch |
 | `branches: all` | every branch — the name gate |
 
-The left half is the scope: `branch` when a single branch is gated, `branches` when the ruleset covers all of them. Nothing in GitHub references a ruleset name, so a rename is one `PUT` with the id unchanged.
-
-No tag ruleset: consumers pin a full SHA, never the tag, and nothing runs here to resolve a check against a tagged commit — so a tag ruleset could carry `deletion` and `non_fast_forward` only.
+No tag ruleset: consumers pin a full SHA, never the tag.
