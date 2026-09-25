@@ -1,0 +1,44 @@
+name: "security/terraform"
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.filter.outputs.changed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - id: filter
+        if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+        shell: bash
+        run: |
+          base="${{ github.event_name == 'push' && github.event.before || github.event.pull_request.base.sha }}"
+          if ! git rev-parse -q --verify "$base^{commit}" >/dev/null; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if git diff --name-only --diff-filter=ACM "$base" "$GITHUB_SHA" | grep -qE '\.tf$|\.tfvars$|\.hcl$'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  security:
+    name: security
+    needs: detect
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.detect.outputs.changed == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Checkov
+        uses: bridgecrewio/checkov-action@444c9db6fa75e2d9c19ebf1fde7322089be9009e # v12
+        with:
+          framework: terraform
+          quiet: true
+          soft_fail: true

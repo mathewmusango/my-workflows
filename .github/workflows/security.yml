@@ -1,0 +1,22 @@
+name: security
+
+on:
+  workflow_call:
+    secrets:
+      GITGUARDIAN_API_KEY:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    uses: ./.github/workflows/security-gitleaks.yml
+  gitguardian:
+    uses: ./.github/workflows/security-gitguardian.yml
+    secrets:
+      GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+  deps:
+    uses: ./.github/workflows/security-deps.yml
+  terraform:
+    uses: ./.github/workflows/security-terraform.yml
