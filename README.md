@@ -37,6 +37,10 @@ jobs:
 Pin the ref to a **full commit SHA**. Call `checks.yml` the same way to get every
 check above in a single job.
 
+## Branch protection
+
+`main` is governed by a ruleset — pull requests only, one approval, squash only, signed commits, no bypass — and every branch's *name* by a second one. Both are recorded in [`rulesets/`](rulesets/README.md). One consequence for maintainers: a republish now arrives through a pull request rather than a direct push to `main`.
+
 ## Security
 
 Report vulnerabilities privately — see [SECURITY.md](SECURITY.md).
