@@ -2,18 +2,19 @@
 
 **Status:** 🟢 applied — live on `refs/tags/v*` · **Config:** [`tags.json`](tags.json)
 
-**Purpose.** Release tags are immutable: a published tag cannot be moved.
+**Purpose.** Release tags are immutable and cannot be removed.
 
 | Field | Value |
 | --- | --- |
 | Target | `refs/tags/v*` |
 | Required checks | none — nothing runs here to resolve one |
 | Bypass actors | none |
-| Rules | `non_fast_forward` · `update` |
+| Rules | `deletion` · `non_fast_forward` · `update` |
 
-**No `creation` rule, and that is load-bearing.** With `bypass_actors` empty, `creation` refuses the push outright — *"Cannot create ref due to creations being restricted"*, verified here on 2026-09-25 — so a tag ruleset carrying it could cut no release at all.
+The same shape as `my-portfolio`'s `tag: v*`, with two of its rules left out because neither can work here:
 
-**No `deletion` rule**, which leaves a mistaken tag removable rather than needing a temporary ruleset edit.
+- **No `creation`.** With `bypass_actors` empty it refuses the push outright — *"Cannot create ref due to creations being restricted"*, verified here on 2026-09-25 — so a tag ruleset carrying it could cut no release at all.
+- **No `required_status_checks`.** `my-portfolio` requires `build` there because its tags deploy; nothing runs in this repository, so there is no context to resolve against a tag.
 
 ## Applying
 

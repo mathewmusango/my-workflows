@@ -19,6 +19,9 @@
     },
     {
       "type": "update"
+    },
+    {
+      "type": "deletion"
     }
   ],
   "bypass_actors": []
