@@ -19,5 +19,5 @@ jobs:
     uses: ./.github/workflows/checks-python.yml
   terraform:
     uses: ./.github/workflows/checks-terraform.yml
-  secrets:
-    uses: ./.github/workflows/security-secrets.yml
+  gitleaks:
+    uses: ./.github/workflows/security-gitleaks.yml

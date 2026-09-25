@@ -1,0 +1,23 @@
+name: "security/gitguardian"
+
+on:
+  workflow_call:
+    secrets:
+      GITGUARDIAN_API_KEY:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  gitguardian:
+    name: gitguardian
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - uses: GitGuardian/ggshield-action@7059aef1ffb7d2374ce27201144f5613beecefe0 # v1.54.0
+        env:
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
