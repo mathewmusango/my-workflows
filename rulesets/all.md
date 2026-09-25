@@ -2,7 +2,7 @@
 
 **Status:** 🟢 applied — live on every branch · **Config:** [`all.json`](all.json)
 
-**Purpose.** The branch-name gate. `branch_name_pattern` is rejected here (`422 Invalid rule`, empty reason) and the UI has no "Restrict branch names" either, so the allow-list is inverted: target **every** branch, *exclude* the allowed names, apply `creation`. Anything not excluded is refused at the push.
+**Purpose.** The branch-name gate — every branch targeted, the allowed names below excluded, `creation` as the only rule. Anything not excluded is refused at the push.
 
 | Field | Value |
 | --- | --- |
