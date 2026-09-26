@@ -1,0 +1,28 @@
+{
+  "id": 24012293,
+  "name": "tag: v*",
+  "target": "tag",
+  "source_type": "Repository",
+  "source": "mathewmusango/my-workflows",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "exclude": [],
+      "include": [
+        "refs/tags/v*"
+      ]
+    }
+  },
+  "rules": [
+    {
+      "type": "non_fast_forward"
+    },
+    {
+      "type": "update"
+    },
+    {
+      "type": "deletion"
+    }
+  ],
+  "bypass_actors": []
+}

@@ -39,7 +39,7 @@ Pin the ref to a **full commit SHA**, never a tag — and keep the release tag i
 
 ## Branch protection
 
-`main` is governed by a ruleset — pull requests only, one approval, squash only, signed commits, no bypass — and every branch's *name* by a second one. Both are recorded in [`rulesets/`](rulesets/README.md). One consequence for maintainers: a republish arrives through a pull request rather than a direct push to `main`.
+`main` is governed by a ruleset — pull requests only, one approval, squash only, signed commits, no bypass — a second governs every branch's *name*, and a third makes the release tags immutable. All three are recorded in [`rulesets/`](rulesets/README.md). One consequence for maintainers: a republish arrives through a pull request rather than a direct push to `main`.
 
 ## Security
 
