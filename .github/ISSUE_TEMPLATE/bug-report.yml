@@ -1,0 +1,37 @@
+name: Bug report
+description: Report a problem with the reusable workflows
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue.
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: Which reusable workflow or leaf job?
+      placeholder: <workflow name>
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What did you expect, and what actually happened?
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Where it runs
+      options:
+        - Called from another repository
+        - The library's own CI
+        - Other
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Logs, the caller's `uses:` line, run URLs, etc.
