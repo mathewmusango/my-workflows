@@ -4,6 +4,12 @@ All notable changes to the published subset are documented here.
 
 Releases are **timestamp tags** — `v<year>.<MMDD>.<HHMM>Z`, stamped in UTC when the release is cut and never moved. Consumers pin a full commit SHA with the tag in a trailing comment, so a tag labels a published commit rather than tracking one. Newest first.
 
+## [2026.0926.0023Z] - 2026-09-26
+
+### Removed
+
+- `checks-markdown.yml` — Markdown linting is dropped, and no repository calls the leaf.
+
 ## [2026.0925.1807Z] - 2026-09-25
 
 ### Removed
