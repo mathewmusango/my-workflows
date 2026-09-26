@@ -10,7 +10,6 @@ Nothing here is triggered: every workflow is `on: workflow_call`, so nothing run
 | --- | --- | --- |
 | `checks-jsonc.yml` | `*.jsonc` | `jsonc` |
 | `checks-js.yml` | `*.js` | `syntax` |
-| `checks-markdown.yml` | `*.md` | `markdownlint` |
 | `checks-shell.yml` | `*.sh`, `.githooks/` | `shellcheck` |
 | `checks-yaml.yml` | `*.yml`, `*.yaml` | `syntax`, `actionlint` |
 | `checks-python.yml` | `*.py`, `pyproject.toml` | `ruff` |
@@ -23,7 +22,7 @@ Nothing here is triggered: every workflow is `on: workflow_call`, so nothing run
 | `checks-links.yml` | scheduled / manual | `links` |
 | `cloudfront-invalidate.yml` · `cloudfront-switch.yml` | manual dispatch | — |
 
-`checks.yml` and `security.yml` are group entry points, each naming several of the leaves above in one job. The rest — `checks-docker`, `checks-markdown`, `checks-links` and the two `cloudfront-*` — are called directly, so a repository never inherits a check with nothing to run it against.
+`checks.yml` and `security.yml` are group entry points, each naming several of the leaves above in one job. The rest — `checks-docker`, `checks-links` and the two `cloudfront-*` — are called directly, so a repository never inherits a check with nothing to run it against.
 
 Each workflow skips — reporting success — when none of its files changed, so requiring them never blocks an unrelated pull request.
 
