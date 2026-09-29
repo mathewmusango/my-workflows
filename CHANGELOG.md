@@ -43,7 +43,7 @@ Releases are **timestamp tags** — `v<year>.<MMDD>.<HHMM>Z`, stamped in UTC whe
 
 ### Added
 
-- `security-gitleaks.yml` and `security-gitguardian.yml`.
+- `security-gitleaks.yml`.
 - `branch-policy.yml`.
 
 ### Removed
