@@ -16,7 +16,6 @@ Nothing here is triggered: every workflow is `on: workflow_call`, so nothing run
 | `checks-docker.yml` | `Dockerfile`, compose files | `hadolint` |
 | `checks-terraform.yml` | `*.tf`, `*.tfvars`, `*.hcl` | `fmt`, `validate`, `lint` |
 | `security-gitleaks.yml` | every run | `gitleaks` |
-| `security-gitguardian.yml` | pull requests | `gitguardian` — needs a `GITGUARDIAN_API_KEY` secret |
 | `security-terraform.yml` | `*.tf`, `*.tfvars`, `*.hcl` | `security` — the Checkov scan |
 | `security-deps.yml` | pull requests | `dependency-review` |
 | `checks-links.yml` | scheduled / manual | `links` |
