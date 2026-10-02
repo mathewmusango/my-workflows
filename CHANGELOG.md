@@ -4,6 +4,12 @@ All notable changes to the published subset are documented here.
 
 Releases are **timestamp tags** — `v<year>.<MMDD>.<HHMM>Z`, stamped in UTC when the release is cut and never moved. Consumers pin a full commit SHA with the tag in a trailing comment, so a tag labels a published commit rather than tracking one. Newest first.
 
+## [2026.1002.1549Z] - 2026-10-02
+
+### Removed
+
+- `cloudfront-invalidate.yml` and `cloudfront-switch.yml` — the manual CloudFront operators lost their only consumer when the jobs were inlined back into `my-portfolio`'s `cloudfront.yml`, because a job that calls a reusable cannot declare `environment:`, so its role ARNs could not be env-scoped. No repository calls either leaf.
+
 ## [2026.0926.0023Z] - 2026-09-26
 
 ### Removed
