@@ -19,7 +19,6 @@ Nothing here is triggered: every workflow is [`on: workflow_call`](https://docs.
 | `security-terraform.yml` | `*.tf`, `*.tfvars`, `*.hcl` | `security` — the Checkov scan |
 | `security-deps.yml` | pull requests | `dependency-review` |
 | `checks-links.yml` | scheduled / manual | `links` |
-| `cloudfront-invalidate.yml` · `cloudfront-switch.yml` | manual dispatch | — |
 
 Each workflow skips — reporting success — when none of its files changed, so requiring them never blocks an unrelated pull request.
 
