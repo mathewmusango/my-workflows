@@ -13,3 +13,7 @@ jobs:
     uses: ./.github/workflows/security-deps.yml
   terraform:
     uses: ./.github/workflows/security-terraform.yml
+  pip-audit:
+    uses: ./.github/workflows/security-pip-audit.yml
+  npm-audit:
+    uses: ./.github/workflows/security-npm-audit.yml
