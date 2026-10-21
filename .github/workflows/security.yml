@@ -7,8 +7,6 @@ permissions:
   contents: read
 
 jobs:
-  gitleaks:
-    uses: ./.github/workflows/security-gitleaks.yml
   deps:
     uses: ./.github/workflows/security-deps.yml
   terraform:

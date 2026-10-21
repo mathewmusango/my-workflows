@@ -4,6 +4,16 @@ All notable changes to the published subset are documented here.
 
 Releases are **timestamp tags** — `v<year>.<MMDD>.<HHMM>Z`, stamped in UTC when the release is cut and never moved. Consumers pin a full commit SHA with the tag in a trailing comment, so a tag labels a published commit rather than tracking one. Newest first.
 
+## [Unreleased]
+
+### Removed
+
+- `security-gitleaks.yml` — secrets are covered **server-side**: GitHub's own secret scanning runs with push protection, so it blocks before a commit lands rather than failing the pull request afterwards, and GitGuardian scans independently. A third scanner added a required context without adding detection.
+
+### Changed
+
+- `security.yml` now aggregates `deps`, `terraform`, `pip-audit` and `npm-audit`. The three corpus-driven leaves run unconditionally — their verdict comes from a corpus that moves without the tree, so a diff gate would suppress them exactly where they cannot change the answer, and a skipped required check reports success without having looked.
+
 ## [2026.1002.1549Z] - 2026-10-02
 
 ### Removed
