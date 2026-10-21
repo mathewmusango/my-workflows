@@ -15,12 +15,13 @@ Nothing here is triggered: every workflow is [`on: workflow_call`](https://docs.
 | `checks-python.yml` | `*.py`, `pyproject.toml` | `ruff` |
 | `checks-docker.yml` | `Dockerfile`, compose files | `hadolint` |
 | `checks-terraform.yml` | `*.tf`, `*.tfvars`, `*.hcl` | `fmt`, `validate`, `lint` |
-| `security-gitleaks.yml` | every run | `gitleaks` |
-| `security-terraform.yml` | `*.tf`, `*.tfvars`, `*.hcl` | `security` — the Checkov scan |
+| `security-terraform.yml` | every run | `security` — the Checkov scan |
+| `security-pip-audit.yml` | every run | `audit` — `pip-audit` over `requirements*.txt` |
+| `security-npm-audit.yml` | every run | `audit` — `npm audit` over `package-lock.json` |
 | `security-deps.yml` | pull requests | `dependency-review` |
 | `checks-links.yml` | scheduled / manual | `links` |
 
-Each workflow skips — reporting success — when none of its files changed, so requiring them never blocks an unrelated pull request.
+The `checks-*` workflows skip — reporting success — when none of their files changed, so requiring them never blocks an unrelated pull request. The corpus-driven security leaves (`security-terraform`, `security-pip-audit`, `security-npm-audit`) run **unconditionally**: their verdict comes from an advisory or policy corpus that moves without the tree, so a diff gate would suppress them exactly where they cannot change the answer. `security-deps` is pull-request-only by nature — its input is the diff.
 
 ## Usage
 
