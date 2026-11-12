@@ -2,6 +2,12 @@ name: "checks/jsonc"
 
 on:
   workflow_call:
+    inputs:
+      script:
+        description: JSONC parser to run, relative to the caller's checkout
+        required: false
+        type: string
+        default: scripts/checks/jsonc.py
 
 permissions:
   contents: read
@@ -37,7 +43,13 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Parse config.jsonc files
-        run: python3 scripts/checks/jsonc.py
+        run: |
+          set -e
+          if [ ! -f "${{ inputs.script }}" ]; then
+            echo "::error::${{ inputs.script }} is missing: checks-jsonc runs the caller's parser"
+            exit 1
+          fi
+          python3 "${{ inputs.script }}"
       - name: Design folders ship config.jsonc + screenshot.png
         run: |
           set -e

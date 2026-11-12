@@ -1,0 +1,41 @@
+name: "security/image"
+
+on:
+  workflow_call:
+    inputs:
+      image-ref:
+        description: Image reference to scan, e.g. ghcr.io/owner/repo:0.1.0
+        required: true
+        type: string
+      severity:
+        description: Trivy severities that fail the job
+        required: false
+        type: string
+        default: "HIGH,CRITICAL"
+      ignore-unfixed:
+        description: Only fail on findings that have a fix available
+        required: false
+        type: boolean
+        default: true
+      exit-code:
+        description: Exit code when the scan reports
+        required: false
+        type: string
+        default: "1"
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  image:
+    name: image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ inputs.image-ref }}
+          severity: ${{ inputs.severity }}
+          ignore-unfixed: ${{ inputs.ignore-unfixed }}
+          exit-code: ${{ inputs.exit-code }}
