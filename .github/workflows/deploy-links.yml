@@ -1,4 +1,4 @@
-name: "checks/links"
+name: "deploy/links"
 
 on:
   workflow_call:
