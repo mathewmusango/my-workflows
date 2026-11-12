@@ -10,6 +10,7 @@ permissions:
 jobs:
   detect:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     outputs:
       changed: ${{ steps.filter.outputs.changed }}
     steps:
