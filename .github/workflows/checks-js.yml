@@ -31,6 +31,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: node --check (syntax)
         run: |
+          set -euo pipefail
           find . -path './.git' -prune -o -type f -name '*.js' -print0 2>/dev/null | while IFS= read -r -d '' f; do
             node --check "$f"
             echo "ok: $f"

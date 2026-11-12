@@ -33,16 +33,19 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Install hadolint
         run: |
+          set -euo pipefail
           curl -fsSL --retry 5 --retry-delay 5 --retry-all-errors -o /usr/local/bin/hadolint \
             https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-linux-x86_64
           chmod +x /usr/local/bin/hadolint
           hadolint --version
       - name: Lint Dockerfiles
         run: |
+          set -euo pipefail
           find . -path './.git' -prune -o -type f -iname 'Dockerfile*' ! -iname '*.dockerignore' -print0 2>/dev/null \
             | xargs -0 -r hadolint --failure-threshold warning
       - name: Validate compose files
         run: |
+          set -euo pipefail
           find . -path './.git' -prune -o -type f \
             \( -name 'docker-compose.yml' -o -name 'docker-compose.yaml' \
             -o -name 'compose.yml' -o -name 'compose.yaml' \) \
