@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   detect:
@@ -23,25 +24,14 @@ jobs:
     outputs:
       changed: ${{ steps.filter.outputs.changed }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          fetch-depth: 0
       - id: filter
         if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
-        shell: bash
-        env:
-          BASE: ${{ github.event_name == 'push' && github.event.before || github.event.pull_request.base.sha }}
-          SCRIPT: ${{ inputs.script }}
-        run: |
-          if ! git rev-parse -q --verify "$BASE^{commit}" >/dev/null; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          if git diff --name-only --diff-filter=ACM "$BASE" "$GITHUB_SHA" | grep -qE '\.jsonc$'; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          elif git diff --name-only --diff-filter=ACM "$BASE" "$GITHUB_SHA" | grep -qxF "$SCRIPT"; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
+        uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad # v3
+        with:
+          filters: |
+            changed:
+              - '**/*.jsonc'
+              - '${{ inputs.script }}'
 
   jsonc:
     name: jsonc
@@ -55,7 +45,7 @@ jobs:
         env:
           SCRIPT: ${{ inputs.script }}
         run: |
-          set -e
+          set -euo pipefail
           if [ ! -f "$SCRIPT" ]; then
             echo "::error::$SCRIPT is missing: checks-jsonc runs the caller's parser"
             exit 1
@@ -65,7 +55,7 @@ jobs:
         env:
           DESIGN_ROOT: ${{ inputs.design-root }}
         run: |
-          set -e
+          set -euo pipefail
           if [ -n "$DESIGN_ROOT" ] && ls "$DESIGN_ROOT"/*/ >/dev/null 2>&1; then
             for d in "$DESIGN_ROOT"/*/; do
               if [ ! -f "$d/config.jsonc" ] || [ ! -f "$d/screenshot.png" ]; then

@@ -22,7 +22,7 @@ jobs:
           mapfile -t locks < <(find . -name package-lock.json \
             -not -path '*/node_modules/*' -not -path './.git/*' | sort)
           if [ "${#locks[@]}" -eq 0 ]; then
-            echo "no package-lock.json; nothing to audit"
+            echo "::notice::no package-lock.json; nothing to audit"
             exit 0
           fi
           for lock in "${locks[@]}"; do

@@ -24,7 +24,7 @@ jobs:
             -not -path '*/.venv/*' -not -path '*/venv/*' \
             -not -path '*/site-packages/*' | sort)
           if [ "${#files[@]}" -eq 0 ]; then
-            echo "no requirements*.txt; nothing to audit"
+            echo "::notice::no requirements*.txt; nothing to audit"
             exit 0
           fi
           pip install --disable-pip-version-check "pip-audit==2.10.1"
