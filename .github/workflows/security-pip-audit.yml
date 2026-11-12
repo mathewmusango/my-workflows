@@ -18,14 +18,17 @@ jobs:
       - name: Audit
         shell: bash
         run: |
-          shopt -s nullglob
-          files=(requirements*.txt)
-          if [ ${#files[@]} -eq 0 ]; then
-            echo "no requirements*.txt; nothing to audit"
+          set -euo pipefail
+          mapfile -t files < <(find . -name 'requirements*.txt' \
+            -not -path '*/node_modules/*' -not -path './.git/*' \
+            -not -path '*/.venv/*' -not -path '*/venv/*' \
+            -not -path '*/site-packages/*' | sort)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "::notice::no requirements*.txt; nothing to audit"
             exit 0
           fi
           pip install --disable-pip-version-check "pip-audit==2.10.1"
           for f in "${files[@]}"; do
-            echo "auditing $f"
-            pip-audit -r "$f"
+            echo "auditing ${f}"
+            pip-audit -r "${f}"
           done

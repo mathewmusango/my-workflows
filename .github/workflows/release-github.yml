@@ -1,0 +1,33 @@
+name: "release/github"
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: Tag to release; defaults to the ref that triggered the caller
+        required: false
+        type: string
+        default: ""
+      generate-notes:
+        description: Let GitHub generate the release notes
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
+        with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          generate_release_notes: ${{ inputs.generate-notes }}

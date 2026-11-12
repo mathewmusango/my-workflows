@@ -18,8 +18,14 @@ jobs:
       - name: Audit
         shell: bash
         run: |
-          if [ ! -f package-lock.json ]; then
-            echo "no package-lock.json; nothing to audit"
+          set -euo pipefail
+          mapfile -t locks < <(find . -name package-lock.json \
+            -not -path '*/node_modules/*' -not -path './.git/*' | sort)
+          if [ "${#locks[@]}" -eq 0 ]; then
+            echo "::notice::no package-lock.json; nothing to audit"
             exit 0
           fi
-          npm audit --package-lock-only --audit-level=high
+          for lock in "${locks[@]}"; do
+            echo "auditing ${lock}"
+            (cd "$(dirname "${lock}")" && npm audit --package-lock-only --audit-level=high)
+          done

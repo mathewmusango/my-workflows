@@ -13,13 +13,17 @@ Nothing here is triggered: every workflow is [`on: workflow_call`](https://docs.
 | `checks-shell.yml` | `*.sh`, `.githooks/` | `shellcheck` |
 | `checks-yaml.yml` | `*.yml`, `*.yaml` | `syntax`, `actionlint` |
 | `checks-python.yml` | `*.py`, `pyproject.toml` | `ruff` |
-| `checks-docker.yml` | `Dockerfile`, compose files | `hadolint` |
+| `checks-docker.yml` | `Dockerfile`/`Containerfile`, compose files | `hadolint`, compose `config` |
 | `checks-terraform.yml` | `*.tf`, `*.tfvars`, `*.hcl` | `fmt`, `validate`, `lint` |
 | `security-terraform.yml` | every run | `security` — the Checkov scan |
 | `security-pip-audit.yml` | every run | `audit` — `pip-audit` over `requirements*.txt` |
 | `security-npm-audit.yml` | every run | `audit` — `npm audit` over `package-lock.json` |
 | `security-deps.yml` | pull requests | `dependency-review` |
-| `checks-links.yml` | scheduled / manual | `links` |
+| `security-image.yml` | a given `image-ref` | `image` — Trivy, HIGH/CRITICAL |
+| `tests-vitest.yml` | a given `working-directory` | `vitest` (typecheck optional) |
+| `release-image-ghcr.yml` | a tag | builds, scans, then pushes to GHCR |
+| `release-github.yml` | a tag | the GitHub Release |
+| `deploy-links.yml` | scheduled / manual, `site-url` | `links` — a deployed site's sitemap |
 
 The `checks-*` workflows skip — reporting success — when none of their files changed, so requiring them never blocks an unrelated pull request. The corpus-driven security leaves (`security-terraform`, `security-pip-audit`, `security-npm-audit`) run **unconditionally**: their verdict comes from an advisory or policy corpus that moves without the tree, so a diff gate would suppress them exactly where they cannot change the answer. `security-deps` is pull-request-only by nature — its input is the diff.
 

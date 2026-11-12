@@ -5,28 +5,24 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   detect:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     outputs:
       changed: ${{ steps.filter.outputs.changed }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          fetch-depth: 0
       - id: filter
         if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
-        shell: bash
-        run: |
-          base="${{ github.event_name == 'push' && github.event.before || github.event.pull_request.base.sha }}"
-          if ! git rev-parse -q --verify "$base^{commit}" >/dev/null; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          if git diff --name-only --diff-filter=ACM "$base" "$GITHUB_SHA" | grep -qiE '(^|/)Dockerfile(\.[^/]+)?$|(^|/)docker-compose\.ya?ml$|(^|/)compose\.ya?ml$'; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
+        uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad # v3
+        with:
+          filters: |
+            changed:
+              - '**/Dockerfile*'
+              - '**/Containerfile*'
+              - '**/*compose*.y*ml'
 
   hadolint:
     name: hadolint
@@ -38,17 +34,41 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Install hadolint
         run: |
+          set -euo pipefail
           curl -fsSL --retry 5 --retry-delay 5 --retry-all-errors -o /usr/local/bin/hadolint \
             https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-linux-x86_64
           chmod +x /usr/local/bin/hadolint
           hadolint --version
       - name: Lint Dockerfiles
         run: |
-          find . -path './.git' -prune -o -type f -iname 'Dockerfile*' ! -iname '*.dockerignore' -print0 2>/dev/null \
+          set -euo pipefail
+          find . -path './.git' -prune -o -type f \
+            \( -iname 'Dockerfile*' -o -iname 'Containerfile*' \) ! -iname '*.dockerignore' -print0 2>/dev/null \
             | xargs -0 -r hadolint --failure-threshold warning
       - name: Validate compose files
         run: |
-          find . -path './.git' -prune -o -type f \
-            \( -name 'docker-compose.yml' -o -name 'docker-compose.yaml' \
-            -o -name 'compose.yml' -o -name 'compose.yaml' \) \
-            -exec docker compose -f {} config -q \;
+          set -euo pipefail
+          shopt -s nullglob
+          find . -path './.git' -prune -o -type f -name '*compose*.y*ml' -print0 2>/dev/null \
+            | xargs -0 -r -n1 dirname | sort -u | while IFS= read -r dir; do
+                [ -d "$dir" ] || continue
+                base=""
+                for candidate in "$dir"/compose.yml "$dir"/compose.yaml \
+                                 "$dir"/docker-compose.yml "$dir"/docker-compose.yaml; do
+                  if [ -f "$candidate" ]; then base="$candidate"; break; fi
+                done
+                if [ -z "$base" ]; then
+                  for single in "$dir"/*compose*.y*ml; do
+                    echo "validating $single"
+                    docker compose -f "$single" config -q
+                  done
+                  continue
+                fi
+                files=(-f "$base")
+                for override in "$dir"/*compose*.y*ml; do
+                  [ "$override" = "$base" ] && continue
+                  files+=(-f "$override")
+                done
+                echo "validating $dir: ${files[*]}"
+                docker compose "${files[@]}" config -q
+              done
