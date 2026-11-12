@@ -21,8 +21,7 @@ jobs:
             changed:
               - '**/Dockerfile*'
               - '**/Containerfile*'
-              - '**/docker-compose.y*ml'
-              - '**/compose.y*ml'
+              - '**/*compose*.y*ml'
 
   hadolint:
     name: hadolint
@@ -48,7 +47,27 @@ jobs:
       - name: Validate compose files
         run: |
           set -euo pipefail
-          find . -path './.git' -prune -o -type f \
-            \( -name 'docker-compose.yml' -o -name 'docker-compose.yaml' \
-            -o -name 'compose.yml' -o -name 'compose.yaml' \) \
-            -exec docker compose -f {} config -q \;
+          shopt -s nullglob
+          find . -path './.git' -prune -o -type f -name '*compose*.y*ml' -print0 2>/dev/null \
+            | xargs -0 -r -n1 dirname | sort -u | while IFS= read -r dir; do
+                [ -d "$dir" ] || continue
+                base=""
+                for candidate in "$dir"/compose.yml "$dir"/compose.yaml \
+                                 "$dir"/docker-compose.yml "$dir"/docker-compose.yaml; do
+                  if [ -f "$candidate" ]; then base="$candidate"; break; fi
+                done
+                if [ -z "$base" ]; then
+                  for single in "$dir"/*compose*.y*ml; do
+                    echo "validating $single"
+                    docker compose -f "$single" config -q
+                  done
+                  continue
+                fi
+                files=(-f "$base")
+                for override in "$dir"/*compose*.y*ml; do
+                  [ "$override" = "$base" ] && continue
+                  files+=(-f "$override")
+                done
+                echo "validating $dir: ${files[*]}"
+                docker compose "${files[@]}" config -q
+              done
