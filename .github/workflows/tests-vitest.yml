@@ -18,6 +18,11 @@ on:
         required: false
         type: boolean
         default: true
+      ignore-scripts:
+        description: Install with `--ignore-scripts` — lifecycle scripts from the dependency tree never run
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -48,7 +53,17 @@ jobs:
           node-version: ${{ inputs.node-version }}
           cache: npm
           cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
-      - run: npm ci --no-audit --no-fund
+      - name: Install
+        shell: bash
+        env:
+          IGNORE_SCRIPTS: ${{ inputs.ignore-scripts }}
+        run: |
+          set -euo pipefail
+          args=(--no-audit --no-fund)
+          if [ "$IGNORE_SCRIPTS" = "true" ]; then
+            args+=(--ignore-scripts)
+          fi
+          npm ci "${args[@]}"
       - if: ${{ inputs.typecheck }}
         run: npm run typecheck
       - run: npm test
