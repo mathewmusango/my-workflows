@@ -13,7 +13,7 @@ Nothing here is triggered: every workflow is [`on: workflow_call`](https://docs.
 | `checks-shell.yml` | `*.sh`, `.githooks/` | `shellcheck` |
 | `checks-yaml.yml` | `*.yml`, `*.yaml` | `syntax`, `actionlint` |
 | `checks-python.yml` | `*.py`, `pyproject.toml` | `ruff` |
-| `checks-docker.yml` | `Dockerfile`, compose files | `hadolint` |
+| `checks-docker.yml` | `Dockerfile`/`Containerfile`, compose files | `hadolint`, compose `config` |
 | `checks-terraform.yml` | `*.tf`, `*.tfvars`, `*.hcl` | `fmt`, `validate`, `lint` |
 | `security-terraform.yml` | every run | `security` — the Checkov scan |
 | `security-pip-audit.yml` | every run | `audit` — `pip-audit` over `requirements*.txt` |

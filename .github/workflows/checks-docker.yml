@@ -20,6 +20,7 @@ jobs:
           filters: |
             changed:
               - '**/Dockerfile*'
+              - '**/Containerfile*'
               - '**/docker-compose.y*ml'
               - '**/compose.y*ml'
 
@@ -41,7 +42,8 @@ jobs:
       - name: Lint Dockerfiles
         run: |
           set -euo pipefail
-          find . -path './.git' -prune -o -type f -iname 'Dockerfile*' ! -iname '*.dockerignore' -print0 2>/dev/null \
+          find . -path './.git' -prune -o -type f \
+            \( -iname 'Dockerfile*' -o -iname 'Containerfile*' \) ! -iname '*.dockerignore' -print0 2>/dev/null \
             | xargs -0 -r hadolint --failure-threshold warning
       - name: Validate compose files
         run: |
