@@ -1,7 +1,7 @@
 # my-workflows
 
-[![Semgrep](https://github.com/mathewmusango/my-workflows/actions/workflows/semgrep.yml/badge.svg?branch=main)](https://github.com/mathewmusango/my-workflows/actions/workflows/semgrep.yml)
-[![CodeQL](https://github.com/mathewmusango/my-workflows/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/mathewmusango/my-workflows/actions/workflows/codeql.yml)
+[![semgrep](https://img.shields.io/github/actions/workflow/status/mathewmusango/my-workflows/semgrep.yml?branch=main&label=semgrep)](https://github.com/mathewmusango/my-workflows/actions/workflows/semgrep.yml)
+[![codeql](https://img.shields.io/github/actions/workflow/status/mathewmusango/my-workflows/codeql.yml?branch=main&label=codeql)](https://github.com/mathewmusango/my-workflows/actions/workflows/codeql.yml)
 [![release](https://img.shields.io/github/v/tag/mathewmusango/my-workflows?label=release&color=blue)](https://github.com/mathewmusango/my-workflows/tags)
 [![license](https://img.shields.io/github/license/mathewmusango/my-workflows?color=blue)](LICENSE)
 
