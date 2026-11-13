@@ -1,4 +1,4 @@
-name: "security/deps"
+name: "security/dependency-review"
 
 on:
   workflow_call:

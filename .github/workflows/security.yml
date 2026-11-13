@@ -7,8 +7,8 @@ permissions:
   contents: read
 
 jobs:
-  deps:
-    uses: ./.github/workflows/security-deps.yml
+  dependency-review:
+    uses: ./.github/workflows/security-dependency-review.yml
   terraform:
     uses: ./.github/workflows/security-terraform.yml
   pip-audit:

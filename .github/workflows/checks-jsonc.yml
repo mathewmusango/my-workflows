@@ -9,10 +9,10 @@ on:
         type: string
         default: scripts/checks/jsonc.py
       design-root:
-        description: Directory whose children must each ship config.jsonc + screenshot.png
+        description: Opt-in directory whose children must each ship config.jsonc + screenshot.png (empty = off)
         required: false
         type: string
-        default: fastfetch
+        default: ""
 
 permissions:
   contents: read
@@ -72,5 +72,5 @@ jobs:
             done
             echo "all designs complete"
           else
-            echo "no $DESIGN_ROOT designs — skipping"
+            echo "design-root not set, or no folders under it — skipping"
           fi

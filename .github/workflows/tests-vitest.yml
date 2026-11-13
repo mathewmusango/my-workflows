@@ -19,10 +19,10 @@ on:
         type: boolean
         default: true
       ignore-scripts:
-        description: Install with `--ignore-scripts` — lifecycle scripts from the dependency tree never run
+        description: Install with `--ignore-scripts`; set false only when the dependency tree needs lifecycle scripts
         required: false
         type: boolean
-        default: false
+        default: true
 
 permissions:
   contents: read
@@ -60,7 +60,7 @@ jobs:
         run: |
           set -euo pipefail
           args=(--no-audit --no-fund)
-          if [ "$IGNORE_SCRIPTS" = "true" ]; then
+          if [ "$IGNORE_SCRIPTS" != "false" ]; then
             args+=(--ignore-scripts)
           fi
           npm ci "${args[@]}"
