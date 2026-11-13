@@ -2,8 +2,9 @@
 
 [![semgrep](https://img.shields.io/github/actions/workflow/status/mathewmusango/my-workflows/semgrep.yml?branch=main&label=semgrep)](https://github.com/mathewmusango/my-workflows/actions/workflows/semgrep.yml)
 [![codeql](https://img.shields.io/github/actions/workflow/status/mathewmusango/my-workflows/codeql.yml?branch=main&label=codeql)](https://github.com/mathewmusango/my-workflows/actions/workflows/codeql.yml)
-[![release](https://img.shields.io/github/v/tag/mathewmusango/my-workflows?label=release&color=blue)](https://github.com/mathewmusango/my-workflows/tags)
-[![license](https://img.shields.io/github/license/mathewmusango/my-workflows?color=blue)](LICENSE)
+[![dependabot](https://img.shields.io/github/actions/workflow/status/mathewmusango/my-workflows/dependabot%2Fdependabot-updates?branch=main&label=dependabot)](https://github.com/mathewmusango/my-workflows/actions/workflows/dependabot/dependabot-updates)
+[![tag](https://img.shields.io/github/v/tag/mathewmusango/my-workflows?label=tag)](https://github.com/mathewmusango/my-workflows/tags)
+[![license](https://img.shields.io/github/license/mathewmusango/my-workflows?color=blue&label=license)](LICENSE)
 
 Reusable GitHub Actions workflows — checks and security jobs that other repositories call instead of reimplementing them.
 
