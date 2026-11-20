@@ -56,26 +56,23 @@ jobs:
           find . -path './.git' -prune -o -type f -name '*compose*.y*ml' -print0 2>/dev/null \
             | xargs -0 -r -n1 dirname | sort -u | while IFS= read -r dir; do
                 [ -d "$dir" ] || continue
-                # Each file is a stack of its own; only an override is read with a base.
-                for single in "$dir"/*compose*.y*ml; do
-                  case "$single" in
-                    *override.y*ml) continue ;;
-                  esac
-                  echo "validating $single"
-                  docker compose -f "$single" config -q
+                base=""
+                for candidate in "$dir"/compose.yml "$dir"/compose.yaml \
+                                 "$dir"/docker-compose.yml "$dir"/docker-compose.yaml; do
+                  if [ -f "$candidate" ]; then base="$candidate"; break; fi
                 done
-                for override in "$dir"/*override*.y*ml; do
-                  base=""
-                  for candidate in "$dir"/compose.yml "$dir"/compose.yaml \
-                                   "$dir"/docker-compose.yml "$dir"/docker-compose.yaml; do
-                    if [ -f "$candidate" ]; then base="$candidate"; break; fi
+                if [ -z "$base" ]; then
+                  for single in "$dir"/*compose*.y*ml; do
+                    echo "validating $single"
+                    docker compose -f "$single" config -q
                   done
-                  if [ -n "$base" ]; then
-                    echo "validating $base with $override"
-                    docker compose -f "$base" -f "$override" config -q
-                  else
-                    echo "validating $override"
-                    docker compose -f "$override" config -q
-                  fi
+                  continue
+                fi
+                files=(-f "$base")
+                for override in "$dir"/*compose*.y*ml; do
+                  [ "$override" = "$base" ] && continue
+                  files+=(-f "$override")
                 done
+                echo "validating $dir: ${files[*]}"
+                docker compose "${files[@]}" config -q
               done
